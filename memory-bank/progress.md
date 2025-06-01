@@ -1,9 +1,9 @@
 # Progress: Gradio Image Generation and Editing App
 
-## Current Status: Docker Compose Implementation Complete (As of 2025-01-06 11:18)
+## Current Status: MVP Launch Successful - Re-integrating Features (As of 2025-01-06 11:57)
 
-*   **Overall Project Phase:** Docker Compose Implementation Complete.
-*   All core files have been created and updated with Docker Compose configuration. The application is ready for testing and deployment.
+*   **Overall Project Phase:** Troubleshooting Complete - Feature Re-integration in Progress.
+*   Successfully resolved TypeError issue through MVP approach. Currently re-integrating image generation functionality incrementally to avoid previous errors.
 
 ## What Works / Completed
 
@@ -22,20 +22,19 @@
     *   `.env`: Environment variables configuration (API key, port, debug)
     *   `README.md`: Updated documentation with Docker Compose instructions
     *   `.dockerignore`: Docker build optimization
-*   **Image Generation Feature:** ✅ COMPLETE
-    *   Text prompt input
-    *   OpenAI API integration with `gpt-image-1` model
-    *   Image display in Gradio interface
-    *   Automatic saving to `output/` folder with timestamps
-    *   Error handling and user feedback
-*   **Image Editing Feature:** ✅ COMPLETE
-    *   Image upload functionality
-    *   Text prompt for edits
-    *   Optional mask upload for inpainting
-    *   Mask format conversion (B&W to RGBA)
-    *   OpenAI API integration for image editing
-    *   Automatic saving to `output/` folder
-    *   Error handling and user feedback
+*   **Minimal MVP App:** ✅ COMPLETE
+    *   Basic Gradio interface with Markdown components
+    *   Successful Docker launch without TypeError
+    *   Environment variable configuration working
+    *   Confirms base Docker/Gradio setup is solid
+*   **Image Generation Feature:** 🔄 TEMPORARILY REVERTED - RE-INTEGRATING
+    *   Previously complete but caused TypeError during launch
+    *   Being re-added incrementally to identify problematic components
+    *   Will include: Text prompt input, OpenAI API integration, image display, file saving
+*   **Image Editing Feature:** 🔄 TEMPORARILY REVERTED - PENDING
+    *   Previously complete but removed during troubleshooting
+    *   Will be re-integrated after image generation is stable
+    *   Will include: Image upload, text prompts, mask support, API integration
 *   **Docker Support:** ✅ COMPLETE
     *   Dockerfile with Python 3.9 slim base
     *   Docker Compose orchestration with `.env` file support
@@ -46,11 +45,15 @@
 
 ## What's Left to Build / Pending Tasks
 
-*   **Phase 4: Testing & Validation**
-    1.  ✅ **READY FOR TESTING:** The application is complete and ready for user testing
-    2.  **User Testing:** Test with actual OpenAI API key to validate functionality
-    3.  **Docker Testing:** Verify Docker build and run process works correctly
-    4.  **Edge Case Testing:** Test error handling, invalid inputs, network issues
+*   **Phase 4: Feature Re-integration (Current)**
+    1.  ✅ **MVP LAUNCH SUCCESSFUL:** Basic Gradio app launches without errors
+    2.  **Image Generation Re-integration:** Add back generation functionality step-by-step
+        *   Step 1: Add UI components (Tab, Textbox, Button, Image display)
+        *   Step 2: Add OpenAI client and helper functions
+        *   Step 3: Add simplified generate function with placeholder
+        *   Step 4: Add full OpenAI API integration
+    3.  **Image Editing Re-integration:** Add back editing functionality after generation works
+    4.  **Testing & Validation:** Test with actual OpenAI API key once features restored
 *   **Phase 5: Optional Enhancements (Future)**
     1.  **Streaming Support:** Could implement using OpenAI Responses API if desired
     2.  **Additional Image Formats:** Support for JPEG, WebP output formats
@@ -61,9 +64,13 @@
 
 ## Known Issues / Blockers
 
-*   **None currently identified.** The core implementation is complete and follows best practices.
-*   **Potential Runtime Issues (to monitor during testing):**
-    *   API rate limits or quota exhaustion
+*   **✅ RESOLVED: TypeError in Gradio Launch** 
+    *   **Issue:** `TypeError: argument of type 'bool' is not iterable` in `gradio_client/utils.py` when launching full application
+    *   **Root Cause:** Likely related to complex Gradio component schema generation (gr.Image with type="pil" or function bindings)
+    *   **Resolution:** MVP approach confirmed base setup works; incremental re-integration strategy adopted
+*   **Potential Runtime Issues (to monitor during re-integration):**
+    *   Recurrence of TypeError when adding back complex components
+    *   API rate limits or quota exhaustion during testing
     *   Large image file uploads causing memory issues
     *   Network connectivity issues with OpenAI API
     *   Docker volume mounting permissions on different operating systems
@@ -77,3 +84,6 @@
 *   **(2025-01-06):** Created complete Docker setup with volume mounting for persistent image storage.
 *   **(2025-01-06):** Implemented Docker Compose configuration with `.env` file for environment variables.
 *   **(2025-01-06):** Updated Gradio launch settings to use configurable port and debug mode from environment variables.
+*   **(2025-01-06 11:48):** Encountered TypeError during docker-compose launch with full application.
+*   **(2025-01-06 11:51):** Implemented MVP debugging strategy - created minimal app.py with basic components.
+*   **(2025-01-06 11:57):** MVP launch successful, confirmed base setup works. Adopted incremental re-integration approach.

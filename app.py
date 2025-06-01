@@ -28,17 +28,29 @@ def save_image_from_b64(b64_string, filename_prefix="generated"):
     return filepath
 
 # Image generation function
-def generate_image(prompt):
+def generate_image(prompt, background_style, quality, size):
     if not prompt or prompt.strip() == "":
         return None, "Please enter a prompt."
     
     try:
+        # Build API parameters
+        api_params = {
+            "model": "gpt-image-1",
+            "prompt": prompt,
+            "n": 1,
+            "moderation": "low",
+        }
+        
+        # Add optional parameters if not "auto"
+        if size != "auto":
+            api_params["size"] = size
+        if quality != "auto":
+            api_params["quality"] = quality
+        if background_style != "auto":
+            api_params["background"] = background_style
+        
         # Call OpenAI API
-        response = client.images.generate(
-            model="gpt-image-1",
-            prompt=prompt,
-            n=1,
-        )
+        response = client.images.generate(**api_params)
         
         # Get base64 image data
         image_b64 = response.data[0].b64_json
@@ -59,7 +71,7 @@ def generate_image(prompt):
 # Create Gradio interface
 with gr.Blocks(title="AI Image Generator") as app:
     gr.Markdown("# 🎨 AI Image Generator")
-    gr.Markdown("Generate images from text prompts using OpenAI's DALL-E 3 model.")
+    gr.Markdown("Generate images from text prompts using OpenAI's gpt-image-1 model.")
     
     with gr.Tab("🖼️ Generate Image"):
         gr.Markdown("### Generate a new image from a text description")
@@ -71,6 +83,29 @@ with gr.Blocks(title="AI Image Generator") as app:
                     placeholder="Describe the image you want to generate...",
                     lines=3
                 )
+                
+                # New input options for gpt-image-1
+                gen_background_input = gr.Radio(
+                    label="Background Style",
+                    choices=["auto", "transparent", "opaque"],
+                    value="auto",
+                    info="Choose background handling for the generated image"
+                )
+                
+                gen_quality_input = gr.Radio(
+                    label="Image Quality",
+                    choices=["auto", "high", "medium", "low"],
+                    value="auto",
+                    info="Select the quality level for image generation"
+                )
+                
+                gen_size_input = gr.Radio(
+                    label="Image Size",
+                    choices=["auto", "1024x1024", "1536x1024", "1024x1536"],
+                    value="auto",
+                    info="Choose image dimensions (auto, square, landscape, portrait)"
+                )
+                
                 gen_button = gr.Button("Generate Image", variant="primary")
             
             with gr.Column():
@@ -79,7 +114,7 @@ with gr.Blocks(title="AI Image Generator") as app:
         
         gen_button.click(
             fn=generate_image,
-            inputs=[gen_prompt],
+            inputs=[gen_prompt, gen_background_input, gen_quality_input, gen_size_input],
             outputs=[gen_output_image, gen_status],
             show_api=False 
         )

@@ -1,8 +1,31 @@
 import os
+import base64
 import gradio as gr
+from datetime import datetime
+from openai import OpenAI
+from PIL import Image
+import io
 
-# Ensure output directory exists - good practice even if not used by MVP
+# Ensure output directory exists
 os.makedirs("output", exist_ok=True)
+
+# Initialize OpenAI client
+def get_openai_client():
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable is required")
+    return OpenAI(api_key=api_key)
+
+client = get_openai_client()
+
+# Helper function to save base64 image
+def save_image_from_b64(b64_string, filename_prefix="generated"):
+    img_data = base64.b64decode(b64_string)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filepath = os.path.join("output", f"{filename_prefix}_{timestamp}.png")
+    with open(filepath, "wb") as f:
+        f.write(img_data)
+    return filepath
 
 # Create Gradio interface with image generation tab
 with gr.Blocks(title="AI Image Generator") as app:
@@ -27,11 +50,42 @@ with gr.Blocks(title="AI Image Generator") as app:
                     gen_output_image = gr.Image(label="Generated Image", type="pil")
                     gen_status = gr.Textbox(label="Status", interactive=False)
             
-            # For now, connect to a simple test function
-            def test_button_click(prompt):
+            # Image generation function
+            def generate_image(prompt):
                 if not prompt or prompt.strip() == "":
                     return None, "Please enter a prompt."
-                return None, f"Button clicked! Prompt: {prompt[:50]}..."
+                
+                try:
+                    # Call OpenAI API
+                    response = client.images.generate(
+                        model="gpt-image-1",
+                        prompt=prompt,
+                        n=1,
+                        size="1024x1024",
+                        response_format="b64_json"
+                    )
+                    
+                    # Get base64 image data
+                    image_b64 = response.data[0].b64_json
+                    
+                    # Convert base64 to PIL Image
+                    img_data = base64.b64decode(image_b64)
+                    pil_image = Image.open(io.BytesIO(img_data))
+                    
+                    # Save image to output folder
+                    filepath = save_image_from_b64(image_b64, "generated")
+                    
+                    return pil_image, f"✅ Image generated successfully! Saved to: {filepath}"
+                    
+                except Exception as e:
+                    error_msg = f"❌ Error generating image: {str(e)}"
+                    return None, error_msg
+            
+            gen_button.click(
+                fn=generate_image,
+                inputs=[gen_prompt],
+                outputs=[gen_output_image, gen_status]
+            )
 
 if __name__ == "__main__":
     # Read configuration from environment variables

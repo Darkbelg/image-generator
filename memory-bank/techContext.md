@@ -16,9 +16,9 @@
     *   `gradio`: For building the web interface.
     *   `Pillow` (Python Imaging Library): May be needed for more advanced image manipulation if Gradio's built-in handling or OpenAI's direct byte/base64 responses are insufficient (e.g., creating masks programmatically, format conversions not handled by Gradio/OpenAI).
     *   `python-dotenv` (optional, for local development): To load environment variables like `OPENAI_API_KEY` from a `.env` file outside of Docker.
-*   **Containerization:** Docker
+*   **Containerization:** Docker with Docker Compose
     *   *Purpose:* Package the application and its dependencies into a portable container.
-    *   *Components:* `Dockerfile` to define the image build process.
+    *   *Components:* `Dockerfile` to define the image build process, `docker-compose.yml` for orchestration, `.env` for environment variables.
 *   **Version Control:** Git (assumed, standard practice)
 
 ## 2. Development Setup
@@ -29,15 +29,19 @@
     3.  Dependencies installed via `pip install -r requirements.txt`.
     4.  `OPENAI_API_KEY` set as an environment variable (e.g., in `.env` file loaded by `python-dotenv`, or exported in the shell).
     5.  Run the Gradio app: `python app.py`.
-*   **Dockerized Environment:**
+*   **Dockerized Environment (Docker Compose - Recommended):**
     1.  Docker Desktop (or Docker Engine on Linux) installed.
-    2.  Project files ( `app.py`, `Dockerfile`, `requirements.txt`) in a directory.
-    3.  Build the Docker image: `docker build -t gradio-image-app .`
-    4.  Run the Docker container: `docker run -p 7860:7860 -e OPENAI_API_KEY="YOUR_API_KEY_HERE" --rm -v "$(pwd)/output:/app/output" gradio-image-app`
-        *   `-p 7860:7860`: Maps port 7860 on the host to port 7860 in the container (Gradio's default).
-        *   `-e OPENAI_API_KEY="YOUR_API_KEY_HERE"`: Passes the API key as an environment variable.
+    2.  Project files (`app.py`, `Dockerfile`, `docker-compose.yml`, `.env`, `requirements.txt`) in a directory.
+    3.  Set up environment variables in `.env` file with your OpenAI API key.
+    4.  Run with Docker Compose: `docker-compose up --build`
+    5.  Stop with: `docker-compose down`
+*   **Alternative Dockerized Environment (Manual Docker):**
+    1.  Build the Docker image: `docker build -t gradio-image-app .`
+    2.  Run the Docker container: `docker run -p 7860:7860 --env-file .env --rm -v "$(pwd)/output:/app/output" gradio-image-app`
+        *   `-p 7860:7860`: Maps port 7860 on the host to port 7860 in the container.
+        *   `--env-file .env`: Loads environment variables from the .env file.
         *   `--rm`: Automatically removes the container when it exits.
-        *   `-v "$(pwd)/output:/app/output"`: Mounts a local `output` directory to `/app/output` inside the container for persistent image storage. The `/app/output` path assumes the `WORKDIR` in the Dockerfile is `/app`. This needs to be created on the host if it doesn't exist.
+        *   `-v "$(pwd)/output:/app/output"`: Mounts local output directory for persistent storage.
 
 ## 3. Technical Constraints & Considerations
 
@@ -66,17 +70,41 @@
 *   **Docker Image Size:**
     *   Aim for a reasonably sized Docker image by using an appropriate base image (e.g., `python:3.9-slim`) and efficient Dockerfile layering.
 
-## 4. Dependencies (`requirements.txt` - Initial Draft)
+## 4. Dependencies (`requirements.txt`)
 
 ```
-openai>=1.0.0  # Check for the latest stable version
-gradio>=4.0.0   # Check for the latest stable version
-Pillow>=9.0.0   # For image manipulation, if needed
-python-dotenv>=0.19.0 # Optional, for local .env file loading
+openai>=1.0.0
+gradio>=4.0.0
+Pillow>=9.0.0
+python-dotenv>=0.19.0
 ```
-*Note: Specific versions should be pinned after testing for stability.*
 
-## 5. Tool Usage Patterns
+## 5. Environment Configuration (`.env`)
+
+```
+OPENAI_API_KEY=your_openai_api_key_here
+APP_PORT=7860
+APP_DEBUG=False
+```
+
+## 6. Docker Compose Configuration (`docker-compose.yml`)
+
+```yaml
+version: '3.8'
+services:
+  gradio-image-app:
+    build: .
+    container_name: gradio-image-app
+    ports:
+      - "7860:7860"
+    env_file:
+      - .env
+    volumes:
+      - ./output:/app/output
+    restart: unless-stopped
+```
+
+## 7. Tool Usage Patterns
 
 *   **OpenAI Client Initialization:**
     ```python

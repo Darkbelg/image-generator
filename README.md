@@ -15,31 +15,50 @@ A Gradio-based web application for generating and editing images using OpenAI's 
 - Docker installed on your system
 - OpenAI API key with access to image generation models
 
-## Quick Start with Docker
+## Quick Start with Docker Compose
 
 1. **Clone or download this project**
 
-2. **Build the Docker image:**
+2. **Set up your environment:**
+   - Copy the `.env` file and add your OpenAI API key:
    ```bash
-   docker build -t gradio-image-app .
+   cp .env .env.local
+   # Edit .env.local and replace 'your_openai_api_key_here' with your actual API key
    ```
+   Or simply edit the `.env` file directly with your API key.
 
-3. **Run the container:**
+3. **Run with Docker Compose:**
    ```bash
-   docker run -p 7860:7860 -e OPENAI_API_KEY="your-api-key-here" --rm -v "$(pwd)/output:/app/output" gradio-image-app
+   docker-compose up --build
    ```
-
-   Replace `your-api-key-here` with your actual OpenAI API key.
 
 4. **Access the application:**
    Open your web browser and go to `http://localhost:7860`
 
-## Docker Run Command Explanation
+5. **Stop the application:**
+   ```bash
+   docker-compose down
+   ```
 
-- `-p 7860:7860`: Maps port 7860 on your host to port 7860 in the container (Gradio's default port)
-- `-e OPENAI_API_KEY="your-api-key-here"`: Passes your OpenAI API key as an environment variable
-- `--rm`: Automatically removes the container when it exits
-- `-v "$(pwd)/output:/app/output"`: Mounts your local `output` directory to the container's output directory for persistent image storage
+## Docker Compose Configuration
+
+The `docker-compose.yml` file handles:
+- **Port mapping**: Maps port 7860 on your host to port 7860 in the container
+- **Environment variables**: Loads configuration from the `.env` file
+- **Volume mounting**: Mounts your local `output` directory for persistent image storage
+- **Auto-restart**: Restarts the container unless manually stopped
+
+## Alternative: Manual Docker Run
+
+If you prefer to use Docker directly without Compose:
+
+```bash
+# Build the image
+docker build -t gradio-image-app .
+
+# Run the container
+docker run -p 7860:7860 --env-file .env --rm -v "$(pwd)/output:/app/output" gradio-image-app
+```
 
 ## Local Development (without Docker)
 
@@ -59,6 +78,7 @@ If you prefer to run the application locally without Docker:
 3. **Set your OpenAI API key:**
    ```bash
    export OPENAI_API_KEY="your-api-key-here"
+   # Or create a .env file with your API key
    ```
 
 4. **Run the application:**
@@ -92,6 +112,8 @@ If you prefer to run the application locally without Docker:
 ├── app.py              # Main Gradio application
 ├── requirements.txt    # Python dependencies
 ├── Dockerfile         # Docker configuration
+├── docker-compose.yml # Docker Compose configuration
+├── .env               # Environment variables (API key, etc.)
 ├── README.md          # This file
 ├── memory-bank/       # Project documentation
 └── output/           # Generated/edited images (created automatically)

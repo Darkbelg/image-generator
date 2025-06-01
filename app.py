@@ -196,4 +196,13 @@ with gr.Blocks(title="AI Image Generator & Editor") as app:
     gr.Markdown("💾 All generated and edited images are automatically saved to the `output/` folder.")
 
 if __name__ == "__main__":
-    app.launch(server_name="0.0.0.0", server_port=7860)
+    # Read configuration from environment variables
+    port = int(os.environ.get("APP_PORT", 7860))
+    debug = os.environ.get("APP_DEBUG", "False").lower() == "true"
+    
+    app.launch(
+        server_name="0.0.0.0",  # Listen on all interfaces
+        server_port=port,
+        share=False,  # Set to True if you want a public link
+        debug=debug
+    )

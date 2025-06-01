@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  gradio-image-app:
+    build: .
+    container_name: gradio-image-app
+    ports:
+      - "7860:7860"
+    env_file:
+      - .env
+    volumes:
+      - ./output:/app/output
+    restart: unless-stopped
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0

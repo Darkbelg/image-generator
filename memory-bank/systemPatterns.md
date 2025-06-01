@@ -48,8 +48,10 @@ graph TD
         *   `save_image(image_data, base_filename)`
     *   These functions will be called by the Gradio interface handlers.
 *   **Configuration Management:**
-    *   The OpenAI API key should not be hardcoded. It will be managed via an environment variable (`OPENAI_API_KEY`) that is passed into the Docker container at runtime.
-    *   Other configurations (e.g., default model, output directory) can be constants or configurable at the top of the main script.
+    *   Environment variables are managed through the `.env` file and loaded by Docker Compose.
+    *   The OpenAI API key is stored in `.env` and passed to the container securely.
+    *   Application configuration (port, debug mode) is also managed through environment variables.
+    *   Other configurations (e.g., default model, output directory) are constants in the main script.
 *   **Error Handling:**
     *   API calls will be wrapped in `try-except` blocks to catch potential network issues, API errors (e.g., rate limits, invalid prompts), or issues with image processing.
     *   User-friendly error messages will be displayed in the Gradio interface.
@@ -75,12 +77,20 @@ graph TD
     *   Specifies the base Python image.
     *   Copies application code (`app.py`, `requirements.txt`).
     *   Installs dependencies from `requirements.txt`.
-    *   Sets the `OPENAI_API_KEY` environment variable (to be provided at `docker run`).
+    *   Sets environment variables for Gradio server configuration.
     *   Defines the command to run the Gradio application.
+*   **`docker-compose.yml`:**
+    *   Orchestrates the Docker container deployment.
+    *   Handles port mapping, environment variable loading, and volume mounting.
+    *   Provides easy start/stop commands for the application.
+*   **`.env`:**
+    *   Stores environment variables including the OpenAI API key.
+    *   Loaded by Docker Compose and used by the application.
 *   **`requirements.txt`:**
-    *   Lists Python dependencies (e.g., `gradio`, `openai`, `Pillow` for image handling if needed beyond base64).
+    *   Lists Python dependencies (e.g., `gradio`, `openai`, `Pillow`, `python-dotenv`).
 *   **`output/` directory:**
-    *   Created by the application (or Dockerfile) to store output images.
+    *   Created by the application to store output images.
+    *   Mounted as a volume for persistence across container restarts.
 
 ## 5. Critical Implementation Paths
 
@@ -96,7 +106,8 @@ graph TD
     *   Implement image saving.
 5.  **Dockerization:**
     *   Create `Dockerfile`.
-    *   Create `requirements.txt`.
+    *   Create `docker-compose.yml` for orchestration.
+    *   Create `.env` file for environment variables.
     *   Ensure the app runs correctly within a Docker container.
-    *   Address volume mapping for the `output/` folder for persistence.
+    *   Configure volume mapping for the `output/` folder for persistence.
 6.  **Error Handling and UX Refinements:** Implement robust error handling and user feedback mechanisms.

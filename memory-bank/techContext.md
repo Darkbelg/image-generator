@@ -96,13 +96,24 @@ services:
     build: .
     container_name: gradio-image-app
     ports:
-      - "7860:7860"
+      - "${APP_PORT}:${APP_PORT}"
     env_file:
       - .env
     volumes:
       - ./output:/app/output
     restart: unless-stopped
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APP_PORT=${APP_PORT}
+      - APP_DEBUG=${APP_DEBUG}
 ```
+
+**Key Features:**
+- Dynamic port mapping using `${APP_PORT}` from .env file
+- Explicit environment variable declaration for clarity
+- Environment variables are loaded from .env file and explicitly passed to container
+- All configuration values are externalized and configurable
 
 ## 7. Tool Usage Patterns
 

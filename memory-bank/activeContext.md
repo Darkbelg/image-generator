@@ -2,23 +2,26 @@
 
 ## 1. Current Work Focus
 
-*   **Phase:** Docker Compose Implementation Complete - Ready for Testing.
-*   **Activity:** Updated application with Docker Compose configuration, .env file management, and configurable Gradio launch settings.
-*   **Objective:** The application is ready for user testing and deployment with improved configuration management.
+*   **Phase:** Docker Compose Configuration Enhanced - Environment Variables Explicitly Declared.
+*   **Activity:** Updated Docker Compose configuration to explicitly declare environment variables in the environment section for better clarity and control.
+*   **Objective:** Ensure environment variables from .env file are properly passed to the Docker container with explicit declaration.
 
 ## 2. Recent Decisions & Changes
 
-*   **Docker Compose Implementation:** All application files updated with Docker Compose configuration:
-    *   `app.py`: Updated with configurable launch settings (port, debug mode from environment variables)
-    *   `docker-compose.yml`: Complete orchestration configuration
-    *   `.env`: Environment variables file for API key and application configuration
-    *   `README.md`: Updated with Docker Compose instructions and usage
-    *   All existing files maintained with full functionality
-*   **Enhanced Configuration Management:**
-    *   Environment variables managed through `.env` file
-    *   Configurable Gradio server settings (port, debug mode)
-    *   Secure API key management
-    *   Simplified deployment with `docker-compose up --build`
+*   **Docker Compose Enhancement:** Updated `docker-compose.yml` with explicit environment variable declaration:
+    *   **Dynamic Port Mapping:** Changed from hardcoded `"7860:7860"` to `"${APP_PORT}:${APP_PORT}"`
+    *   **Explicit Environment Variables:** Added environment section with:
+      - `GRADIO_SERVER_NAME=0.0.0.0`
+      - `OPENAI_API_KEY=${OPENAI_API_KEY}`
+      - `APP_PORT=${APP_PORT}`
+      - `APP_DEBUG=${APP_DEBUG}`
+    *   **Maintained env_file:** Kept `.env` file loading for validation and ease of adding new variables
+*   **Updated Documentation:** Updated `memory-bank/techContext.md` to reflect the new Docker Compose configuration with explicit environment variable handling
+*   **Configuration Benefits:**
+    *   Clear visibility of which environment variables are passed to container
+    *   Dynamic port configuration through environment variables
+    *   Better debugging and troubleshooting capabilities
+    *   Follows Docker Compose best practices for environment variable management
 
 ## 3. Next Steps (Immediate)
 

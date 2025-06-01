@@ -90,7 +90,6 @@ APP_DEBUG=False
 ## 6. Docker Compose Configuration (`docker-compose.yml`)
 
 ```yaml
-version: '3.8'
 services:
   gradio-image-app:
     build: .

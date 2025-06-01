@@ -76,13 +76,14 @@ with gr.Blocks(title="AI Image Generator") as app:
                 gen_button = gr.Button("Generate Image", variant="primary")
             
             with gr.Column():
-                gen_output_image = gr.Image(label="Generated Image", type="pil")
+                gen_output_image = gr.Image(label="Generated Image", type="pil", interactive=False)
                 gen_status = gr.Textbox(label="Status", interactive=False)
         
         gen_button.click(
             fn=generate_image,
             inputs=[gen_prompt],
-            outputs=[gen_output_image, gen_status]
+            outputs=[gen_output_image, gen_status],
+            show_api=False 
         )
 
 if __name__ == "__main__":

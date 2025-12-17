@@ -36,7 +36,7 @@ def generate_image(prompt, background_style, quality, size):
     try:
         # Build API parameters
         api_params = {
-            "model": "gpt-image-1",
+            "model": "gpt-image-1.5",
             "prompt": prompt,
             "n": 1,
             "moderation": "low",

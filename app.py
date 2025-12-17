@@ -90,7 +90,7 @@ def edit_image(uploaded_files, prompt, n_images, background_style, quality, size
         
         # Build API parameters
         api_params = {
-            "model": "gpt-image-1",
+            "model": "gpt-image-1.5",
             "image": image_files_for_api,
             "prompt": prompt,
             "n": n_images,
